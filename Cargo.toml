@@ -12,6 +12,7 @@ Battlesnakes written in Rust
 
 [dependencies]
 axum = "0.7.3"
+anyhow = "1.0.80"
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.114"
 shuttle-axum = "0.39.0"

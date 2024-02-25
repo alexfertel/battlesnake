@@ -5,8 +5,8 @@ use super::snake::Battlesnake;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Board {
-    height: u32,
-    width: i32,
+    height: usize,
+    width: usize,
     food: Vec<Cell>,
     snakes: Vec<Battlesnake>,
     hazards: Vec<Cell>,

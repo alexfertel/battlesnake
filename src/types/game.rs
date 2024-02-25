@@ -7,15 +7,15 @@ use super::{board::Board, snake::Battlesnake};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Game {
-    id: String,
-    ruleset: HashMap<String, Value>,
-    timeout: u32,
+    pub id: String,
+    pub ruleset: HashMap<String, Value>,
+    pub timeout: u32,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct GameState {
-    game: Game,
-    turn: i32,
-    board: Board,
-    you: Battlesnake,
+    pub game: Game,
+    pub turn: i32,
+    pub board: Board,
+    pub you: Battlesnake,
 }
