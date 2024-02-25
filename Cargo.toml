@@ -1,0 +1,20 @@
+[package]
+name = "battlesnake"
+authors = ["alexfertel <https://twitter.com/alexfertel>"]
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/battlesnake"
+readme = "README.md"
+keywords = ["battlesnake"]
+description = """
+Battlesnakes written in Rust
+"""
+
+[dependencies]
+axum = "0.7.3"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.114"
+shuttle-axum = "0.39.0"
+shuttle-runtime = "0.39.0"
+tokio = "1.28.2"
+tracing = "0.1.40"
