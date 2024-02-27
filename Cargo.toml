@@ -1,21 +1,20 @@
-[package]
-name = "battlesnake"
+[workspace]
+members = ["crates/mcts", "bin/battlesnake"]
+default-members = ["bin/battlesnake"]
+
+# Explicitly set the resolver to version 2, which is the default for packages with edition >= 2021
+# https://doc.rust-lang.org/edition-guide/rust-2021/default-cargo-resolver.html
+resolver = "2"
+
+[workspace.package]
 authors = ["alexfertel <https://twitter.com/alexfertel>"]
 version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/battlesnake"
 readme = "README.md"
+license = "MIT OR Apache-2.0"
 keywords = ["battlesnake"]
+exclude = [".github/"]
 description = """
 Battlesnakes written in Rust
 """
-
-[dependencies]
-axum = "0.7.3"
-anyhow = "1.0.80"
-serde = { version = "1.0.197", features = ["derive"] }
-serde_json = "1.0.114"
-shuttle-axum = "0.39.0"
-shuttle-runtime = "0.39.0"
-tokio = "1.28.2"
-tracing = "0.1.40"
