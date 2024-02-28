@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/mcts", "bin/battlesnake"]
+members = ["crates/search", "bin/battlesnake"]
 default-members = ["bin/battlesnake"]
 
 # Explicitly set the resolver to version 2, which is the default for packages with edition >= 2021
