@@ -21,7 +21,19 @@ impl Dungeon {
     }
 
     pub fn valid_successor(&self, p: &Point) -> bool {
-        p.x >= 0 && p.x < self.board.len() as i64 && p.y >= 0 && p.y < self.board[0].len() as i64
+        let in_range = p.x >= 0
+            && p.x < self.board.len() as i64
+            && p.y >= 0
+            && p.y < self.board[0].len() as i64;
+
+        if !in_range {
+            return false;
+        }
+
+        let px = p.x as usize;
+        let py = p.y as usize;
+
+        self.board[px][py] != '*'
     }
 }
 
@@ -78,38 +90,65 @@ mod tests {
 
     use super::Dungeon;
 
-    macro_rules! simple_dungeon_with_strategies {
-        ($($strategy:ty),* $(,)?) => {
-            paste::paste! {$(#[test]
-            #[allow(non_snake_case)]
-            fn [< simple_dungeon_ $strategy >]() {
-                let dungeon = r#"
-                    ..........
-                    ........E.
-                    ..........
-                    .S........
-                    ..........
-                    "#;
+    #[allow(non_camel_case_types)]
+    type dfs = Dfs<Point>;
+    #[allow(non_camel_case_types)]
+    type bfs = Bfs<Point>;
 
-                let board: Vec<Vec<char>> = dungeon
-                    .trim()
-                    .lines()
-                    .map(str::trim)
-                    .map(|l| l.chars().skip_while(|c| c.is_whitespace()).collect())
-                    .collect();
-                let p = Dungeon::new(board, 'S', 'E');
+    fn position(needle: char, dungeon: &Vec<Vec<char>>) -> Option<Point> {
+        for i in 0..dungeon.len() {
+            for j in 0..dungeon[0].len() {
+                if dungeon[i][j] == needle {
+                    return Some(Point::new(i as i64, j as i64));
+                }
+            }
+        }
+
+        None
+    }
+
+    macro_rules! assert_strategies {
+        ($dungeon:ident, $needle:literal, $($strategy:ty),* $(,)?) => {
+            $(
+                let p = Dungeon::new($dungeon.clone(), 'S', $needle);
                 let s = <$strategy>::default();
-
-                let expected_end = Point::new(1, 8);
+                let expected_end = position($needle, &p.board).unwrap();
                 let actual_end = search(p, s);
                 assert_eq!(expected_end, actual_end);
+            )*
+        }
+    }
+
+    macro_rules! dungeons {
+        ($($name:ident => $dungeon:literal),* $(,)?) => {
+            $(paste::paste! {
+                #[test]
+                fn [<$name _dungeon>]() {
+                    let d = $dungeon;
+                    let board: Vec<Vec<char>> = d
+                        .trim()
+                        .lines()
+                        .map(str::trim)
+                        .map(|l| l.chars().skip_while(|c| c.is_whitespace()).collect())
+                        .collect();
+
+                    assert_strategies!(board, 'E', dfs, bfs);
+                }
             })*
-            }
         };
     }
 
-    type DungeonDfs = Dfs<Point>;
-    type DungeonBfs = Bfs<Point>;
-
-    simple_dungeon_with_strategies!(DungeonDfs, DungeonBfs,);
+    dungeons!(
+    simple => r#" ..........
+                  ........E.
+                  ..........
+                  .S........
+                  .........."#,
+    walled => r#" ..........
+                  **.*****.E
+                  .*.....***
+                  .*****....
+                  ..*..****.
+                  .S........"#,
+    );
 }
