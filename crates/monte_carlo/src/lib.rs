@@ -1,10 +1,14 @@
-use game::{Cell, GameState};
-use search::Direction;
+use std::ops::Index;
 
-const YOU: u8 = 0b0001;
-const FOE: u8 = 0b0010;
-const FOOD: u8 = 0b0100;
-const HEAD: u8 = 0b1000;
+use game::GameState;
+use search::{Direction, Point};
+
+const YOU: u8 = 0b00001;
+const FOE: u8 = 0b00010;
+const FOOD: u8 = 0b00100;
+const HEAD: u8 = 0b01000;
+const TAIL: u8 = 0b10000;
+const BRANCHING_FACTOR: usize = 0;
 
 #[derive(Debug, Clone)]
 pub struct Bits {
@@ -22,7 +26,7 @@ impl Bits {
 
     pub fn get(&self, what: u8) -> Option<usize> {
         for i in 0..self.bs.len() {
-            if self.bs[i] & !what == 0 {
+            if self.bs[i] == what {
                 return Some(i);
             }
         }
@@ -30,16 +34,20 @@ impl Bits {
         None
     }
 
-    pub fn set(&mut self, cells: &[Cell], what: u8) {
-        let n = self.bs.len();
-        for c in cells {
-            let cx = c.x as usize;
-            let cy = c.y as usize;
+    pub fn or(&mut self, idx: usize, what: u8) {
+        self.bs[idx] |= what;
+    }
 
-            let i = cx * n + cy;
+    pub fn and(&mut self, idx: usize, what: u8) {
+        self.bs[idx] &= what;
+    }
+}
 
-            self.bs[i] &= what;
-        }
+impl Index<usize> for Bits {
+    type Output = u8;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.bs[index]
     }
 }
 
@@ -61,22 +69,47 @@ impl Node {
     }
 
     fn populate_children(&mut self) {
-        let yh = self
-            .board
-            .get(YOU | HEAD)
-            .expect("the head of the you snake should exist");
-        let fh = self
-            .board
-            .get(FOE | HEAD)
-            .expect("the head of the foe snake should exist");
+        let mut children = Vec::with_capacity(BRANCHING_FACTOR);
 
-        let yhx = (yh / self.board.size) as isize;
-        let yhy = (yh % self.board.size) as isize;
-        let fhx = (fh / self.board.size) as isize;
-        let fhy = (fh % self.board.size) as isize;
+        let yh = self.board.get(YOU | HEAD);
+        let yh = yh.expect("the head of the you snake should exist");
+        let fh = self.board.get(FOE | HEAD);
+        let fh = fh.expect("the head of the foe snake should exist");
+
+        let n = self.board.size;
+        let yhx = (yh / n) as isize;
+        let yhy = (yh % n) as isize;
+        let fhx = (fh / n) as isize;
+        let fhy = (fh % n) as isize;
+
+        let yt = self.board.get(YOU | TAIL);
+        let yt = yt.expect("the tail of the you snake should exist");
+        let ft = self.board.get(YOU | TAIL);
+        let ft = ft.expect("the tail of the foe snake should exist");
         for (dy, df) in Direction::all().iter().zip(Direction::all()) {
             let dyv = dy.vector();
-            // TODO: Check for invalid children. (head moving in direction will eat itself)
+            let nyv = dyv + Point::new(yhx, yhy);
+            let yi = nyv.index(n);
+            if self.board[yi] == YOU {
+                continue;
+            }
+
+            let dfv = df.vector();
+            let nfv = dfv + Point::new(fhx, fhy);
+            let fi = nfv.index(n);
+            if self.board[fi] == FOE {
+                continue;
+            }
+
+            let mut nb = self.board.clone();
+            nb.or(yi, YOU | HEAD);
+            nb.and(yh, YOU);
+            nb.and(yt, 0);
+            nb.or(fi, FOE | HEAD);
+            nb.and(fh, FOE);
+            nb.and(ft, 0);
+
+            children.push(Node::new(nb));
         }
     }
 
@@ -96,14 +129,30 @@ pub struct MonteCarlo {
 impl MonteCarlo {
     pub fn new(game: &GameState) -> Self {
         // We assume the board is a square.
-        let n = game.board.height * game.board.height;
-        let snakes = game.board.snakes;
-        let mut board = Bits::new(game.board.height, n);
-        board.set(&game.board.food, FOOD);
-        board.set(&snakes[0].body, YOU);
-        board.set(&snakes[1].body, FOE);
-        board.set(&[snakes[0].body[0]], HEAD);
-        board.set(&[snakes[1].body[0]], HEAD);
+        let n = game.board.height;
+        let snakes = &game.board.snakes;
+        let mut board = Bits::new(n, n * n);
+        for c in game.board.food.iter().map(|p| p.index(n)) {
+            board.or(c, FOOD);
+        }
+
+        let you = &snakes[0];
+        let head = you.body[0];
+        let tail = you.body[you.body.len() - 1];
+        for c in you.body.iter().map(|p| p.index(n)) {
+            board.or(c, YOU);
+        }
+        board.or(head.index(n), HEAD);
+        board.or(tail.index(n), TAIL);
+
+        let foe = &snakes[1];
+        let head = foe.body[0];
+        let tail = foe.body[foe.body.len() - 1];
+        for c in foe.body.iter().map(|p| p.index(n)) {
+            board.or(c, FOE);
+        }
+        board.or(head.index(n), HEAD);
+        board.or(tail.index(n), TAIL);
 
         let root = Node::new(board);
         Self { root }

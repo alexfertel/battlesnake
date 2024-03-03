@@ -9,6 +9,9 @@ readme.workspace = true
 description.workspace = true
 keywords.workspace = true
 
+[dependencies]
+serde = { version = "1.0.197", features = ["derive"] }
+
 [dev-dependencies]
 paste = "1.0.14"
 

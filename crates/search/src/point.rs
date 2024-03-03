@@ -1,4 +1,6 @@
-#[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Point {
     pub x: isize,
     pub y: isize,
@@ -7,6 +9,13 @@ pub struct Point {
 impl Point {
     pub fn new(x: isize, y: isize) -> Self {
         Self { x, y }
+    }
+
+    pub fn index(&self, size: usize) -> usize {
+        let cx = self.x as usize;
+        let cy = self.y as usize;
+
+        cx * size + cy
     }
 }
 

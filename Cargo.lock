@@ -537,6 +537,7 @@ dependencies = [
 name = "game"
 version = "0.1.0"
 dependencies = [
+ "search",
  "serde",
  "serde_json",
 ]
@@ -1628,6 +1629,7 @@ name = "search"
 version = "0.1.0"
 dependencies = [
  "paste",
+ "serde",
 ]
 
 [[package]]
