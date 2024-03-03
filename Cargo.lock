@@ -221,6 +221,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum 0.7.4",
+ "game",
+ "search",
  "serde",
  "serde_json",
  "shuttle-axum",
@@ -529,6 +531,14 @@ dependencies = [
  "pin-project-lite",
  "pin-utils",
  "slab",
+]
+
+[[package]]
+name = "game"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -999,6 +1009,15 @@ dependencies = [
  "log",
  "wasi",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "monte_carlo"
+version = "0.1.0"
+dependencies = [
+ "game",
+ "rand",
+ "search",
 ]
 
 [[package]]

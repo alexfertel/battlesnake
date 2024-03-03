@@ -7,6 +7,9 @@ mod dungeon;
 mod point;
 mod traits;
 
+pub use direction::Direction;
+pub use point::Point;
+
 pub fn search<P: Problem, S: Strategy<P>>(mut problem: P, mut strategy: S) -> P::State {
     let start = problem.get_start();
     strategy.push(start);

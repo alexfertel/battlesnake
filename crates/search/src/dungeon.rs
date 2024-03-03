@@ -22,9 +22,9 @@ impl Dungeon {
 
     pub fn valid_successor(&self, p: &Point) -> bool {
         let in_range = p.x >= 0
-            && p.x < self.board.len() as i64
+            && p.x < self.board.len() as isize
             && p.y >= 0
-            && p.y < self.board[0].len() as i64;
+            && p.y < self.board[0].len() as isize;
 
         if !in_range {
             return false;
@@ -44,7 +44,7 @@ impl Problem for Dungeon {
         for i in 0..self.board.len() {
             for j in 0..self.board[0].len() {
                 if self.board[i][j] == self.start {
-                    return Point::new(i as i64, j as i64);
+                    return Point::new(i as isize, j as isize);
                 }
             }
         }
@@ -99,7 +99,7 @@ mod tests {
         for i in 0..dungeon.len() {
             for j in 0..dungeon[0].len() {
                 if dungeon[i][j] == needle {
-                    return Some(Point::new(i as i64, j as i64));
+                    return Some(Point::new(i as isize, j as isize));
                 }
             }
         }

@@ -1,0 +1,16 @@
+[package]
+name = "monte_carlo"
+version = "0.1.0"
+edition = "2021"
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+readme.workspace = true
+description.workspace = true
+keywords.workspace = true
+
+[dependencies]
+game = { path = "../game" }
+rand = "0.8.5"
+search = { path = "../search" }
+

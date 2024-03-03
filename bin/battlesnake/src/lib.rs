@@ -9,7 +9,6 @@ use state::AppState;
 pub mod routes;
 pub mod snakes;
 pub mod state;
-pub mod types;
 
 pub fn run() -> shuttle_axum::ShuttleAxum {
     let state = AppState {

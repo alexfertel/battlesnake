@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use crate::{snakes::snake::Snake, types::game::Game};
+use crate::snakes::snake::Snake;
+use game::Game;
 
 pub type GameId = String;
 

@@ -3,7 +3,9 @@ use std::sync::{Arc, Mutex};
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 
-use crate::{state::AppState, types::{direction::Direction, game::GameState}};
+use game::GameState;
+use search::Direction;
+use crate::state::AppState;
 
 #[derive(Serialize, Deserialize)]
 pub struct Info {

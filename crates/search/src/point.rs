@@ -1,19 +1,19 @@
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Point {
-    pub x: i64,
-    pub y: i64,
+    pub x: isize,
+    pub y: isize,
 }
 
 impl Point {
-    pub fn new(x: i64, y: i64) -> Self {
+    pub fn new(x: isize, y: isize) -> Self {
         Self { x, y }
     }
 }
 
-impl std::ops::Mul<i64> for Point {
+impl std::ops::Mul<isize> for Point {
     type Output = Self;
 
-    fn mul(self, rhs: i64) -> Self::Output {
+    fn mul(self, rhs: isize) -> Self::Output {
         Self {
             x: self.x * rhs,
             y: self.y * rhs,

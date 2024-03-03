@@ -1,4 +1,5 @@
-use crate::types::{direction::Direction, game::GameState};
+use game::GameState;
+use search::Direction;
 
 use super::snake::Snake;
 
