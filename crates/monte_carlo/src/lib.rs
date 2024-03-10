@@ -11,12 +11,12 @@ const TAIL: u8 = 0b10000;
 const BRANCHING_FACTOR: usize = 0;
 
 #[derive(Debug, Clone)]
-pub struct Bits {
+pub struct Buffer {
     bs: Vec<u8>,
     size: usize,
 }
 
-impl Bits {
+impl Buffer {
     pub fn new(size: usize, len: usize) -> Self {
         Self {
             bs: vec![0; len],
@@ -34,16 +34,18 @@ impl Bits {
         None
     }
 
+    #[inline]
     pub fn or(&mut self, idx: usize, what: u8) {
         self.bs[idx] |= what;
     }
 
+    #[inline]
     pub fn and(&mut self, idx: usize, what: u8) {
         self.bs[idx] &= what;
     }
 }
 
-impl Index<usize> for Bits {
+impl Index<usize> for Buffer {
     type Output = u8;
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -52,14 +54,14 @@ impl Index<usize> for Bits {
 }
 
 pub struct Node {
-    pub board: Bits,
+    pub board: Buffer,
     pub wins: usize,
     pub simulations: usize,
     pub children: Option<Vec<Node>>,
 }
 
 impl Node {
-    pub fn new(board: Bits) -> Self {
+    pub fn new(board: Buffer) -> Self {
         Self {
             board,
             wins: 0,
@@ -131,7 +133,7 @@ impl MonteCarlo {
         // We assume the board is a square.
         let n = game.board.height;
         let snakes = &game.board.snakes;
-        let mut board = Bits::new(n, n * n);
+        let mut board = Buffer::new(n, n * n);
         for c in game.board.food.iter().map(|p| p.index(n)) {
             board.or(c, FOOD);
         }
